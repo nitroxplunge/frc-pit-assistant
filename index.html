@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>FRC Pit Assistant</title>
+        <link rel="stylesheet" href="index.css">
+        <link href="https://fonts.googleapis.com/css?family=Dosis:800|Roboto:900" rel="stylesheet">
+        <script src="jquery.min.js"></script>
+        <script src="bluealliance.js"></script>
+        <script src="index.js"></script>
+    </head>
+    <body>
+        <div id="mainbar">
+            <p id="title">FRC Pit Assistant</p>
+            <p class="input-indicator">FRC</p>
+            <input class="iteminput" id="teaminput" type="text" name="team" +placeholder="####" maxlength="4" onkeypress="return isNumberKey(event)">
+            <select class="iteminput" id="eventinput">
+                <option>Please Select a Team</option>
+            </select>
+        </div>
+        <div id="content">
+            <img id="loadinggif" src="powercube.gif">
+            <p id="teamheadline"></p>
+        </div>
+    </body>
+</html>

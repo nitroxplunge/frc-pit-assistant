@@ -1,0 +1,79 @@
+body {
+    background-color: white;
+    padding: 0;
+    margin: 0;
+}
+
+#mainbar {
+    width: 100%;
+    height: 100px;
+    background-color: #303030;
+    padding: 0;
+    margin: 0;
+    border-bottom-style: solid;
+    border-bottom-color: #ffed21;
+    border-bottom-width: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#title {
+    position: absolute;
+    margin: 25px;
+    font-size: 40px;
+    font-family: 'Roboto', sans-serif;
+    color: white;
+}
+
+.input-indicator {
+    position: absolute;
+    margin: 0;
+    left: 485px;
+    top: 25px;
+    font-size: 32px;
+    font-family: 'Dosis', sans-serif;
+    color: white;
+}
+
+.iteminput {
+    position: absolute;
+    top: 25px;
+    text-align: center;
+    font-family: 'Dosis', sans-serif;
+}
+
+#teaminput {
+    left: 550px;
+    width: 100px;
+    font-size: 30px;
+}
+
+#eventinput {
+    left: 800px;
+    width: 300px;
+    height: 45px;
+    font-size: 20px;
+}
+
+#content {
+    position: absolute;
+    top: 105px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 105px);
+    background-color: #f2f2f2;
+}
+
+#loadinggif {
+    position: absolute;
+    top: 200px;
+    left: calc(50% - 128px)
+}
+
+#teamheadline {
+    position: absolute;
+    margin: 25px;
+    font-size: 30px;
+    font-family: 'Roboto', sans-serif;
+}
