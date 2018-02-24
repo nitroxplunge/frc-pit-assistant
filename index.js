@@ -123,7 +123,7 @@ async function pageInit() {
 }
 
 async function pagePeriodic() {
-    var streamwidth = $(window).width() - document.getElementById('teamheadline').offsetWidth - 200;
+    var streamwidth = $(window).width() - Math.max(document.getElementById('teamheadline').offsetWidth, document.getElementById('matches').offsetWidth) - 200;
     if (streamwidth > 1067) { streamwidth = 1067 }
     $("#stream").width(streamwidth);
     $("#stream").height(Math.trunc(streamwidth / 1.77916667));
