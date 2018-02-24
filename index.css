@@ -50,7 +50,7 @@ body {
 }
 
 #eventinput {
-    left: 800px;
+    left: 700px;
     width: 300px;
     height: 45px;
     font-size: 20px;
@@ -71,9 +71,23 @@ body {
     left: calc(50% - 128px)
 }
 
+#avatar {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    background-color: #a0a0a0;
+}
+
 #teamheadline {
     position: absolute;
     margin: 25px;
+    left: 60px;
     font-size: 30px;
     font-family: 'Roboto', sans-serif;
+}
+
+#stream {
+    position: absolute;
+    right: 25;
+    top: 25;
 }
