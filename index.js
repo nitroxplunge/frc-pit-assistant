@@ -21,6 +21,14 @@ function replaceChar(str, index, replacement) {
     return str.substr(0, index) + replacement + str.substr(index + replacement.length);
 }
 
+function compareMatches(a,b) {
+  if (a.time < b.time)
+    return -1;
+  if (a.time > b.time)
+    return 1;
+  return 0;
+}
+
 async function pageInit() {
     var team = await tba.getTeam(getQueryVariable("team"));
     var events = await tba.getEventsForTeam(team);
@@ -28,9 +36,11 @@ async function pageInit() {
     var year = date.getFullYear()
 
     if (team.team_number == undefined) {
+        document.getElementsByClassName("headline")[0].innerHTML = "";
         document.getElementById("teamheadline").innerHTML = "Error: Team not found";
         document.getElementById("teamheadline").style.color = "red";
-        return false;
+        document.getElementById("teamheadline").style.left = "0px";
+        return undefined;
     }
     document.getElementById("teamheadline").innerHTML = team.team_number + " " + team.nickname;
     document.getElementById("eventinput").innerHTML = "";
@@ -60,51 +70,17 @@ async function pageInit() {
     if (eventselected == -1 && eventsThisYear > 0) {
         eventselected = events.length - eventsThisYear;
     }
+    if (events[eventselected] == undefined) {
+        document.getElementById("avatar").innerHTML = "";
+        document.getElementsByClassName("headline")[0].innerHTML = "";
+        document.getElementById("teamheadline").innerHTML = "Error: Team wasn't active in " + year + " or only competes in districts (not yet supported).";
+        document.getElementById("teamheadline").style.color = "red";
+        document.getElementById("teamheadline").style.left = "0px";
+        return undefined;
+    }
     $('#eventinput option[value="' + getQueryVariable("event") + '"]').attr("selected", true);
 
-    var matches = await tba.getMatchesAtEvent(events[eventselected]);
-    var teamMatches = [];
-    var teamMatchAlliances = [];
-    for (i in matches) {
-        for (j in matches[i].alliances.blue.team_keys) {
-            if (matches[i].alliances.blue.team_keys[j] == "frc" + team.team_number) {
-                teamMatches.push(matches[i]);
-                teamMatchAlliances.push("blue");
-            }
-        }
-        for (j in matches[i].alliances.red.team_keys) {
-            if (matches[i].alliances.red.team_keys[j] == "frc" + team.team_number) {
-                teamMatches.push(matches[i]);
-                teamMatchAlliances.push("red");
-            }
-        }
-    }
-    for (i in teamMatches) {
-        var teams = [];
-        if (teamMatchAlliances[i] == "blue") {
-            for (j in teamMatches[i].alliances.blue.team_keys) {
-                teams.push(teamMatches[i].alliances.blue.team_keys[j].substr(3));
-            }
-            for (j in teamMatches[i].alliances.red.team_keys) {
-                teams.push(teamMatches[i].alliances.red.team_keys[j].substr(3));
-            }
-            $('#matches').append('<div class="match"><div class="matchnumberdiv"><p class="matchnumber">' + teamMatches[i].match_number + '</p></div><div class="bluealliancef"><p class="matchteam">' + teams[0] + '</p><p class="matchteam">' + teams[1] + '</p><p class="matchteam">' + teams[2] + '</p></div><div class="redallianceb"><p class="matchteam">' + teams[3] + '</p><p class="matchteam">' + teams[4] + '</p><p class="matchteam">' + teams[5] + '</p></div></div>');
-        }
-        if (teamMatchAlliances[i] == "red") {
-            for (j in teamMatches[i].alliances.red.team_keys) {
-                teams.push(teamMatches[i].alliances.red.team_keys[j].substr(3));
-            }
-            for (j in teamMatches[i].alliances.blue.team_keys) {
-                teams.push(teamMatches[i].alliances.blue.team_keys[j].substr(3));
-            }
-            $('#matches').append('<div class="match"><div class="matchnumberdiv"><p class="matchnumber">' + teamMatches[i].match_number + '</p></div><div class="redalliancef"><p class="matchteam">' + teams[0] + '</p><p class="matchteam">' + teams[1] + '</p><p class="matchteam">' + teams[2] + '</p></div><div class="blueallianceb"><p class="matchteam">' + teams[3] + '</p><p class="matchteam">' + teams[4] + '</p><p class="matchteam">' + teams[5] + '</p></div></div>');
-        }
-    }
-    if (teamMatches.length == 0) {
-         $('#matches').append("<p>Sorry, this event's schedule is not yet available</p>")
-    }
-
-    var streamwidth = $(window).width() - Math.max(document.getElementById('teamheadline').offsetWidth, document.getElementById('matches').offsetWidth) - 200;
+    var streamwidth = $(window).width() - Math.max(document.getElementById('teamheadline').offsetWidth, document.getElementById('upcomingmatches').offsetWidth) - 200;
     if (streamwidth > 1067) { streamwidth = 1067 }
     if (eventselected > -1 && events[eventselected].webcasts != undefined && events[eventselected].webcasts.length > 0 && events[eventselected].webcasts[events[eventselected].webcasts.length - 1].type === "twitch") {
         $("#stream").width(streamwidth);
@@ -119,14 +95,71 @@ async function pageInit() {
 
     $('#avatar').attr("src", "https://frcavatars.herokuapp.com/get_image?team=" + team.team_number);
 
-    return true;
+    return events[eventselected];
 }
 
 async function pagePeriodic() {
-    var streamwidth = $(window).width() - Math.max(document.getElementById('teamheadline').offsetWidth, document.getElementById('matches').offsetWidth) - 200;
+    var streamwidth = $(window).width() - Math.max(document.getElementById('teamheadline').offsetWidth, document.getElementById('upcomingmatches').offsetWidth) - 200;
     if (streamwidth > 1067) { streamwidth = 1067 }
     $("#stream").width(streamwidth);
     $("#stream").height(Math.trunc(streamwidth / 1.77916667));
+}
+
+async function pagePeriodicSlow(event, prevMatches) {
+    var team = await tba.getTeam(getQueryVariable("team"));
+    var matches = await tba.getMatchesAtEvent(event);
+    matches.sort(compareMatches);
+    if (prevMatches != matches) {
+        document.getElementById("upcomingmatches").innerHTML = "";
+        var teamMatches = [];
+        var teamMatchAlliances = [];
+        for (i in matches) {
+            for (j in matches[i].alliances.blue.team_keys) {
+                if (matches[i].alliances.blue.team_keys[j] == "frc" + team.team_number) {
+                    teamMatches.push(matches[i]);
+                    teamMatchAlliances.push("blue");
+                }
+            }
+            for (j in matches[i].alliances.red.team_keys) {
+                if (matches[i].alliances.red.team_keys[j] == "frc" + team.team_number) {
+                    teamMatches.push(matches[i]);
+                    teamMatchAlliances.push("red");
+                }
+            }
+        }
+        if (teamMatches.length == 0) {
+            $('#upcomingmatches').append("<p>Sorry, this event's schedule is not yet available</p>")
+        }
+        var upcomingMatchesFound = 0;
+        for (i in teamMatches) {
+            var teams = [];
+            if (!tba.isMatchDone(teamMatches[i]) && upcomingMatchesFound < 3) {
+                if (teamMatchAlliances[i] == "blue") {
+                    for (j in teamMatches[i].alliances.blue.team_keys) {
+                        teams.push(teamMatches[i].alliances.blue.team_keys[j].substr(3));
+                    }
+                    for (j in teamMatches[i].alliances.red.team_keys) {
+                        teams.push(teamMatches[i].alliances.red.team_keys[j].substr(3));
+                    }
+                    $('#upcomingmatches').append('<div class="match"><div class="matchnumberdiv"><p class="matchnumber">' + teamMatches[i].comp_level.toUpperCase() + " " + teamMatches[i].match_number + '</p></div><div class="bluealliancef"><p class="matchteam">' + teams[0] + '</p><p class="matchteam">' + teams[1] + '</p><p class="matchteam">' + teams[2] + '</p></div><div class="redallianceb"><p class="matchteam">' + teams[3] + '</p><p class="matchteam">' + teams[4] + '</p><p class="matchteam">' + teams[5] + '</p></div></div>');
+                }
+                if (teamMatchAlliances[i] == "red") {
+                    for (j in teamMatches[i].alliances.red.team_keys) {
+                        teams.push(teamMatches[i].alliances.red.team_keys[j].substr(3));
+                    }
+                    for (j in teamMatches[i].alliances.blue.team_keys) {
+                        teams.push(teamMatches[i].alliances.blue.team_keys[j].substr(3));
+                    }
+                    $('#upcomingmatches').append('<div class="match"><div class="matchnumberdiv"><p class="matchnumber">' + teamMatches[i].comp_level.toUpperCase() + " " + teamMatches[i].match_number + '</p></div><div class="redalliancef"><p class="matchteam">' + teams[0] + '</p><p class="matchteam">' + teams[1] + '</p><p class="matchteam">' + teams[2] + '</p></div><div class="blueallianceb"><p class="matchteam">' + teams[3] + '</p><p class="matchteam">' + teams[4] + '</p><p class="matchteam">' + teams[5] + '</p></div></div>');
+                }
+                var elements = document.getElementById("upcomingmatches").getElementsByClassName("matchteam");
+                for (j in elements) {
+                    if (parseInt(elements[j].innerHTML) === team.team_number) { elements[j].style.color = "black" }
+                }
+                upcomingMatchesFound++;
+            }
+        }
+    }
 }
 
 $('#loadinggif').show()
@@ -154,7 +187,13 @@ window.onload = async function() {
         }
     });
 
-    await pageInit();
-    $('#loadinggif').hide()
+    var event = await pageInit();
+
     setInterval(pagePeriodic, 20);
+    $('#loadinggif').hide()
+    if (event != undefined) {
+        var matches = pagePeriodicSlow(event, [])
+        setInterval(function() { matches = pagePeriodicSlow(event, matches) }, 10000);
+    }
+
 }

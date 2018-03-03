@@ -62,7 +62,7 @@ body {
     left: 0;
     width: 100%;
     height: calc(100% - 105px);
-    background-color: #f2f2f2;
+    background-color: #ffffff;
 }
 
 #loadinggif {
@@ -75,7 +75,6 @@ body {
     position: absolute;
     top: 25px;
     left: 25px;
-    background-color: #a0a0a0;
 }
 
 #teamheadline {
@@ -86,13 +85,20 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
-#matches {
+.headline {
+    position: absolute;
+    left: 25px;
+    font-size: 22px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.matches {
     position: absolute;
     left: 25px;
     top: 100px;
 }
 
-#matches p {
+.matches p {
     font-size: 20px;
     font-family: 'Roboto', sans-serif;
 }
@@ -106,7 +112,7 @@ body {
 .matchnumberdiv {
     background-color: lightgray;
     height: 35px;
-    width: 35px;
+    width: 80px;
     border-left: 3px solid #4c4c4c;
     border-top: 3px solid #4c4c4c;
     border-bottom: 3px solid #4c4c4c;
@@ -131,7 +137,7 @@ body {
     width: 180px;
     border-top: 3px solid #4c4c4c;
     border-bottom: 3px solid #4c4c4c;
-    margin-left: 41px;
+    margin-left: 86px;
     margin-top: -41px;
     color: white;
 }
@@ -140,7 +146,7 @@ body {
     background-color: #0066b3;
     height: 35px;
     width: 180px;
-    margin-left: 221px;
+    margin-left: 266px;
     margin-top: -41px;
     border-right: 3px solid #4c4c4c;
     border-top: 3px solid #4c4c4c;
@@ -156,7 +162,7 @@ body {
     width: 180px;
     border-top: 3px solid #4c4c4c;
     border-bottom: 3px solid #4c4c4c;
-    margin-left: 41px;
+    margin-left: 86px;
     margin-top: -41px;
     color: white;
 }
@@ -165,7 +171,7 @@ body {
     background-color: #ed1c24;
     height: 35px;
     width: 180px;
-    margin-left: 221px;
+    margin-left: 266px;
     margin-top: -41px;
     border-right: 3px solid #4c4c4c;
     border-top: 3px solid #4c4c4c;
