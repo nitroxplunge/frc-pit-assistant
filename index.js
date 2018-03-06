@@ -133,7 +133,9 @@ async function pagePeriodicSlow(event, prevMatches) {
         var upcomingMatchesFound = 0;
         for (i in teamMatches) {
             var teams = [];
-            if (!tba.isMatchDone(teamMatches[i]) && upcomingMatchesFound < 3) {
+            console.log(teamMatches[i]);
+            console.log(tba.isMatchDone(teamMatches[i]));
+            //if (!tba.isMatchDone(teamMatches[i]) && upcomingMatchesFound < 3) {
                 if (teamMatchAlliances[i] == "blue") {
                     for (j in teamMatches[i].alliances.blue.team_keys) {
                         teams.push(teamMatches[i].alliances.blue.team_keys[j].substr(3));
@@ -157,7 +159,7 @@ async function pagePeriodicSlow(event, prevMatches) {
                     if (parseInt(elements[j].innerHTML) === team.team_number) { elements[j].style.color = "black" }
                 }
                 upcomingMatchesFound++;
-            }
+            //}
         }
     }
 }
